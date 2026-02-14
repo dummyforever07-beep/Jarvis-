@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- Floating Button Container -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <!-- Floating Button -->
+        <ImageView
+            android:id="@+id/floatingButtonImage"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_jarvis"
+            android:background="@drawable/floating_button_bg"
+            android:padding="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/floating_button_description"/>
+
+        <!-- Pulse Animation -->
+        <View
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/floating_button_bg"
+            android:alpha="0.3"
+            android:scaleX="1.2"
+            android:scaleY="1.2"/>
+
+    </FrameLayout>
+
+    <!-- Debug Panel (Initially Hidden) -->
+    <LinearLayout
+        android:id="@+id/debugPanel"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-200dp"
+        android:layout_marginTop="60dp"
+        android:orientation="vertical"
+        android:background="@color/surface"
+        android:padding="8dp"
+        android:elevation="8dp"
+        android:visibility="gone">
+
+        <!-- Current App -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="App:"
+            android:textColor="@color/accent"
+            android:textSize="10sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/currentAppText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--"
+            android:textColor="@color/text_secondary"
+            android:textSize="8sp"
+            android:maxLines="1"
+            android:ellipsize="end"/>
+
+        <!-- UI JSON -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UI:"
+            android:textColor="@color/accent"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/uiJsonText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="{}"
+            android:textColor="@color/text_secondary"
+            android:textSize="6sp"
+            android:fontFamily="monospace"
+            android:maxLines="3"
+            android:ellipsize="end"/>
+
+        <!-- Model Output -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Output:"
+            android:textColor="@color/accent"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/modelOutputText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="{}"
+            android:textColor="@color/text_secondary"
+            android:textSize="6sp"
+            android:fontFamily="monospace"
+            android:maxLines="2"
+            android:ellipsize="end"/>
+
+    </LinearLayout>
+
+    <!-- Emergency Stop Button -->
+    <Button
+        android:id="@+id/emergencyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:layout_marginStart="0dp"
+        android:text="@string/emergency_stop"
+        style="@style/EmergencyStopButton"
+        android:textSize="10sp"
+        android:padding="8dp"
+        android:minWidth="40dp"/>
+
+</FrameLayout>

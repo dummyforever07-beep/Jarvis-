@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/accent"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:paddingBottom="16dp"/>
+
+        <!-- Service Controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp">
+
+            <Button
+                android:id="@+id/startServiceButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/start_service"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/stopServiceButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/stop_service"/>
+
+        </LinearLayout>
+
+        <!-- Permission Info -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/accessibility_permission_message"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Instruction Input -->
+        <EditText
+            android:id="@+id/instructionInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_instruction_hint"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary"
+            android:background="@color/surface"
+            android:padding="12dp"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:maxLines="2"/>
+
+        <!-- Process Button -->
+        <Button
+            android:id="@+id/processButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/process_button"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Status Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/status_ready"
+            android:textColor="@color/success"
+            android:textSize="14sp"
+            android:paddingBottom="8dp"/>
+
+        <!-- Current App Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/current_app"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/currentAppText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="--"
+            android:textColor="@color/text_primary"
+            android:textSize="14sp"
+            android:paddingBottom="8dp"/>
+
+        <!-- UI JSON Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ui_json"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/uiJsonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="{}"
+            style="@style/DebugPanelText"
+            android:background="@color/surface"
+            android:padding="8dp"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            android:paddingBottom="8dp"/>
+
+        <!-- Model Output Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/model_output"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/modelOutputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="{}"
+            style="@style/DebugPanelText"
+            android:background="@color/surface"
+            android:padding="8dp"
+            android:maxLines="5"
+            android:scrollbars="vertical"
+            android:paddingBottom="8dp"/>
+
+        <!-- Status Log Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Log"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/statusLogText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            style="@style/DebugPanelText"
+            android:background="@color/surface"
+            android:padding="8dp"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            android:paddingBottom="8dp"/>
+
+        <!-- Clear Logs Button -->
+        <Button
+            android:id="@+id/clearLogsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clear_logs"/>
+
+    </LinearLayout>
+
+</ScrollView>
