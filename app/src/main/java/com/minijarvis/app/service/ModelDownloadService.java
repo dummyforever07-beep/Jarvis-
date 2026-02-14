@@ -33,6 +33,7 @@ public class ModelDownloadService extends Service {
     
     private static final String MODEL_URL = "https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf";
     private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
+    private static final String MODEL_DIR = "models";
     
     private NotificationManager notificationManager;
     private Thread downloadThread;
@@ -86,7 +87,11 @@ public class ModelDownloadService extends Service {
 
     private void downloadModel() {
         try {
-            File modelFile = new File(getFilesDir(), MODEL_FILE);
+            File modelDir = new File(getFilesDir(), MODEL_DIR);
+            if (!modelDir.exists()) {
+                modelDir.mkdirs();
+            }
+            File modelFile = new File(modelDir, MODEL_FILE);
             
             // Check if already exists
             if (modelFile.exists()) {

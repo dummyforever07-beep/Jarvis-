@@ -146,14 +146,6 @@ public class FloatingButtonService extends Service {
         ImageView buttonImage = floatingButtonView.findViewById(R.id.floatingButtonImage);
         View emergencyButton = floatingButtonView.findViewById(R.id.emergencyButton);
         
-        // Handle floating button clicks
-        buttonImage.setOnClickListener(v -> {
-            vibrate();
-            if (buttonListener != null) {
-                buttonListener.onButtonClicked();
-            }
-        });
-        
         // Handle emergency stop button
         emergencyButton.setOnClickListener(v -> {
             vibrate();
@@ -162,18 +154,32 @@ public class FloatingButtonService extends Service {
             }
         });
         
-        // Handle drag gestures
+        // Handle drag gestures and clicks using touch listener
+        final float[] initialX = new float[1];
+        final float[] initialY = new float[1];
+        final long[] touchStartTime = new long[1];
+        final boolean[] isDragging = new boolean[1];
+        
         buttonImage.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     v.setPressed(true);
+                    touchStartTime[0] = System.currentTimeMillis();
+                    isDragging[0] = false;
+                    initialX[0] = event.getRawX();
+                    initialY[0] = event.getRawY();
                     // Store initial touch position
                     params.x = (int) (event.getRawX() - v.getWidth() / 2);
                     params.y = (int) (event.getRawY() - v.getHeight() / 2);
-                    updateViewPosition(params);
                     return true;
                     
                 case MotionEvent.ACTION_MOVE:
+                    // Check if moved enough to be considered a drag
+                    float deltaX = Math.abs(event.getRawX() - initialX[0]);
+                    float deltaY = Math.abs(event.getRawY() - initialY[0]);
+                    if (deltaX > 10 || deltaY > 10) {
+                        isDragging[0] = true;
+                    }
                     // Update position while dragging
                     params.x = (int) (event.getRawX() - v.getWidth() / 2);
                     params.y = (int) (event.getRawY() - v.getHeight() / 2);
@@ -182,6 +188,14 @@ public class FloatingButtonService extends Service {
                     
                 case MotionEvent.ACTION_UP:
                     v.setPressed(false);
+                    long touchDuration = System.currentTimeMillis() - touchStartTime[0];
+                    // If not dragging and touch was short, treat as click
+                    if (!isDragging[0] && touchDuration < 500) {
+                        vibrate();
+                        if (buttonListener != null) {
+                            buttonListener.onButtonClicked();
+                        }
+                    }
                     return true;
             }
             return false;

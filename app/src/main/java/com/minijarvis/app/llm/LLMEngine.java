@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class LLMEngine {
     private static final String TAG = "LLMEngine";
-    private static final String MODEL_FILE = "gemma-2b-q4.gguf";
+    private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
     private static final String MODEL_DIR = "models";
     private static final String MODEL_URL = "https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf";
     private static final int CONTEXT_SIZE = 1024;
