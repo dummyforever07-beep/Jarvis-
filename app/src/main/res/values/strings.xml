@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MiniJarvis</string>
+    <string name="accessibility_service_description">MiniJarvis uses accessibility service to read screen elements and perform automation actions.</string>
+    <string name="floating_button_description">Tap to activate MiniJarvis</string>
+    <string name="start_service">Start Service</string>
+    <string name="stop_service">Stop Service</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="accessibility_permission_message">Accessibility permission is required for MiniJarvis to work.</string>
+    <string name="overlay_permission_message">Draw over other apps permission is required for the floating button.</string>
+    <string name="battery_optimization_message">Disable battery optimization for reliable background operation.</string>
+    <string name="user_instruction_hint">What would you like MiniJarvis to do?</string>
+    <string name="process_button">Execute</string>
+    <string name="clear_logs">Clear Logs</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_processing">Processing...</string>
+    <string name="status_executing">Executing action...</string>
+    <string name="status_error">Error</string>
+    <string name="current_app">Current App</string>
+    <string name="ui_json">UI JSON</string>
+    <string name="model_output">Model Output</string>
+    <string name="action_performed">Action: %1$s</string>
+    <string name="no_model">No model loaded</string>
+    <string name="model_loaded">Model loaded</string>
+    <string name="notification_channel_name">MiniJarvis Service</string>
+    <string name="notification_channel_description">Keeps MiniJarvis running in background</string>
+    <string name="notification_title">MiniJarvis Active</string>
+    <string name="notification_text">Tap the floating button to control your phone with AI</string>
+    <string name="emergency_stop">STOP</string>
+</resources>
