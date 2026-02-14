@@ -20,11 +20,13 @@ import java.util.List;
  */
 public class LLMEngine {
     private static final String TAG = "LLMEngine";
-    private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
+    private static final String MODEL_FILE = "gemma-2b-q4.gguf";
+    private static final String MODEL_DIR = "models";
     private static final String MODEL_URL = "https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf";
     private static final int CONTEXT_SIZE = 1024;
     private static final float TEMPERATURE = 0.2f;
     private static final int MAX_TOKENS = 120;
+    private static final long MIN_MODEL_SIZE = 1500000000; // Minimum 1.5GB for valid model
 
     private Context context;
     private long modelPtr = 0;
@@ -68,25 +70,35 @@ public class LLMEngine {
      */
     public boolean initialize() {
         try {
-            // Check if model already exists in files dir
-            File modelFile = new File(context.getFilesDir(), MODEL_FILE);
+            // Check if model exists in models subdirectory
+            File modelDir = new File(context.getFilesDir(), MODEL_DIR);
+            File modelFile = new File(modelDir, MODEL_FILE);
             
             if (!modelFile.exists()) {
-                Log.i(TAG, "Model not found, will be downloaded after app starts");
-                // Model will be downloaded by ModelDownloader service
+                Log.i(TAG, "Model not found at: " + modelFile.getAbsolutePath());
+                // Model will be downloaded by ModelDownloadActivity
                 return false;
             }
 
             String modelPath = modelFile.getAbsolutePath();
-            if (!modelFile.exists() || modelFile.length() < 1000000) {
-                Log.w(TAG, "Model file invalid or incomplete");
+            
+            // Validate model file
+            if (!modelFile.exists() || modelFile.length() < MIN_MODEL_SIZE) {
+                Log.w(TAG, "Model file invalid or incomplete. Size: " + modelFile.length());
+                // Delete corrupted file
+                modelFile.delete();
                 return false;
             }
 
+            Log.i(TAG, "Loading model from: " + modelPath);
+            Log.i(TAG, "Model size: " + (modelFile.length() / (1024 * 1024 * 1024)) + " GB");
+            
             // Initialize native library
             modelPtr = nativeInit(modelPath, CONTEXT_SIZE, TEMPERATURE, MAX_TOKENS);
             if (modelPtr == 0) {
-                Log.e(TAG, "Failed to initialize model");
+                Log.e(TAG, "Failed to initialize model - native init returned 0");
+                // Model might be corrupted, delete it
+                modelFile.delete();
                 return false;
             }
 
@@ -141,8 +153,32 @@ public class LLMEngine {
      * Check if model file exists and is valid
      */
     public boolean isModelDownloaded() {
-        File modelFile = new File(context.getFilesDir(), MODEL_FILE);
-        return modelFile.exists() && modelFile.length() > 1000000;
+        File modelDir = new File(context.getFilesDir(), MODEL_DIR);
+        File modelFile = new File(modelDir, MODEL_FILE);
+        return modelFile.exists() && modelFile.length() >= MIN_MODEL_SIZE;
+    }
+    
+    /**
+     * Get the model file path
+     */
+    public String getModelPath() {
+        File modelDir = new File(context.getFilesDir(), MODEL_DIR);
+        File modelFile = new File(modelDir, MODEL_FILE);
+        return modelFile.getAbsolutePath();
+    }
+    
+    /**
+     * Delete corrupted model file to force re-download
+     */
+    public boolean deleteModelFile() {
+        File modelDir = new File(context.getFilesDir(), MODEL_DIR);
+        File modelFile = new File(modelDir, MODEL_FILE);
+        if (modelFile.exists()) {
+            boolean deleted = modelFile.delete();
+            Log.i(TAG, "Model file deleted: " + deleted);
+            return deleted;
+        }
+        return true;
     }
 
     /**
@@ -195,45 +231,6 @@ public class LLMEngine {
             return response.substring(startIdx, endIdx + 1);
         }
         return null;
-    }
-
-    private boolean isModelAvailable() {
-        try {
-            InputStream is = context.getAssets().open(MODEL_FILE);
-            is.close();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    private String extractModelToFilesDir() {
-        try {
-            File filesDir = context.getFilesDir();
-            File modelFile = new File(filesDir, MODEL_FILE);
-            
-            if (modelFile.exists() && modelFile.length() > 0) {
-                return modelFile.getAbsolutePath();
-            }
-
-            InputStream is = context.getAssets().open(MODEL_FILE);
-            FileOutputStream os = new FileOutputStream(modelFile);
-            
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = is.read(buffer)) != -1) {
-                os.write(buffer, 0, read);
-            }
-            
-            is.close();
-            os.close();
-            
-            Log.i(TAG, "Model extracted to: " + modelFile.getAbsolutePath());
-            return modelFile.getAbsolutePath();
-        } catch (Exception e) {
-            Log.e(TAG, "Error extracting model", e);
-            return null;
-        }
     }
 
     // Native methods

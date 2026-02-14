@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "MainActivity";
     private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1;
     private static final int ACCESSIBILITY_PERMISSION_REQUEST_CODE = 2;
+    private static final int MODEL_DOWNLOAD_REQUEST_CODE = 3;
     
     // UI components
     private EditText instructionInput;
@@ -68,6 +69,20 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Initialize LLM engine to check for model
+        llmEngine = new LLMEngine(this);
+        
+        // Check model before showing UI
+        if (!llmEngine.isModelDownloaded()) {
+            // Launch download activity immediately
+            Intent intent = new Intent(this, ModelDownloadActivity.class);
+            startActivity(intent);
+            // Finish this activity so user can't use app without model
+            finish();
+            return;
+        }
+        
         setContentView(R.layout.activity_main);
         
         initializeComponents();
@@ -78,14 +93,28 @@ public class MainActivity extends AppCompatActivity implements
     }
     
     @Override
+    protected void onResume() {
+        super.onResume();
+        checkPermissions();
+        
+        // Check if model is now available after download
+        if (llmEngine != null && llmEngine.isModelDownloaded()) {
+            updateModelStatus();
+            processButton.setEnabled(true);
+        }
+    }
+    
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         cleanupComponents();
     }
     
     private void initializeComponents() {
-        // Initialize LLM engines
-        llmEngine = new LLMEngine(this);
+        // Initialize LLM engines (llmEngine already initialized in onCreate if model exists)
+        if (llmEngine == null) {
+            llmEngine = new LLMEngine(this);
+        }
         mockLlmEngine = new MockLLMEngine(this);
         
         // Initialize mock engine (for demo purposes)
@@ -171,6 +200,13 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 appendLog("Overlay permission denied");
             }
+        }
+        
+        // Check if model download completed successfully
+        if (requestCode == MODEL_DOWNLOAD_REQUEST_CODE && resultCode == RESULT_OK) {
+            appendLog("Model download completed");
+            updateModelStatus();
+            processButton.setEnabled(true);
         }
     }
     
@@ -331,17 +367,13 @@ public class MainActivity extends AppCompatActivity implements
     }
     
     private void downloadModel() {
-        appendLog("Starting model download...");
-        Intent intent = new Intent(this, ModelDownloadService.class);
-        startForegroundService(intent);
+        appendLog("Launching model download...");
         
-        Toast.makeText(this, "Model download started. This may take several minutes.", Toast.LENGTH_LONG).show();
+        // Launch ModelDownloadActivity
+        Intent intent = new Intent(this, ModelDownloadActivity.class);
+        startActivityForResult(intent, MODEL_DOWNLOAD_REQUEST_CODE);
         
-        // Check status after 5 seconds
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            updateModelStatus();
-            processButton.setEnabled(true);
-        }, 10000);
+        Toast.makeText(this, "Model download will start. This may take several minutes.", Toast.LENGTH_LONG).show();
     }
     
     @Override
