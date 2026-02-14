@@ -55,6 +55,29 @@
             android:textSize="12sp"
             android:paddingBottom="8dp"/>
 
+        <!-- Model Status -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Model Status"
+            style="@style/SectionTitle"/>
+
+        <TextView
+            android:id="@+id/modelStatusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Checking model status..."
+            android:textColor="@color/warning"
+            android:textSize="14sp"
+            android:paddingBottom="8dp"/>
+
+        <Button
+            android:id="@+id/downloadModelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Download Model"
+            android:layout_marginBottom="16dp"/>
+
         <!-- Instruction Input -->
         <EditText
             android:id="@+id/instructionInput"

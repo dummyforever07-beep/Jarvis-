@@ -23,6 +23,7 @@ import com.minijarvis.app.llm.MockLLMEngine;
 import com.minijarvis.app.model.ActionModel;
 import com.minijarvis.app.model.UIStructure;
 import com.minijarvis.app.service.FloatingButtonService;
+import com.minijarvis.app.service.ModelDownloadService;
 import com.minijarvis.app.util.ActionExecutor;
 
 /**
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements
     private Button startServiceButton;
     private Button stopServiceButton;
     private Button clearLogsButton;
+    private Button downloadModelButton;
+    private TextView modelStatusText;
     private TextView statusText;
     private TextView currentAppText;
     private TextView uiJsonText;
@@ -98,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements
         startServiceButton = findViewById(R.id.startServiceButton);
         stopServiceButton = findViewById(R.id.stopServiceButton);
         clearLogsButton = findViewById(R.id.clearLogsButton);
+        downloadModelButton = findViewById(R.id.downloadModelButton);
+        modelStatusText = findViewById(R.id.modelStatusText);
         statusText = findViewById(R.id.statusText);
         currentAppText = findViewById(R.id.currentAppText);
         uiJsonText = findViewById(R.id.uiJsonText);
@@ -109,6 +114,10 @@ public class MainActivity extends AppCompatActivity implements
         startServiceButton.setOnClickListener(v -> startServices());
         stopServiceButton.setOnClickListener(v -> stopServices());
         clearLogsButton.setOnClickListener(v -> clearLogs());
+        downloadModelButton.setOnClickListener(v -> downloadModel());
+        
+        // Check model status
+        updateModelStatus();
         
         updateStatus("Ready");
         appendLog("MiniJarvis initialized. Grant permissions and start service.");
@@ -304,6 +313,35 @@ public class MainActivity extends AppCompatActivity implements
     
     private void clearLogs() {
         statusLogText.setText("");
+    }
+    
+    private void updateModelStatus() {
+        boolean modelDownloaded = llmEngine.isModelDownloaded();
+        
+        if (modelDownloaded) {
+            modelStatusText.setText("✅ Model downloaded - AI ready");
+            downloadModelButton.setText("Redownload Model");
+            downloadModelButton.setEnabled(true);
+        } else {
+            modelStatusText.setText("❌ Model not downloaded - Download required");
+            downloadModelButton.setText("Download Model (2GB)");
+            downloadModelButton.setEnabled(true);
+            processButton.setEnabled(false);
+        }
+    }
+    
+    private void downloadModel() {
+        appendLog("Starting model download...");
+        Intent intent = new Intent(this, ModelDownloadService.class);
+        startForegroundService(intent);
+        
+        Toast.makeText(this, "Model download started. This may take several minutes.", Toast.LENGTH_LONG).show();
+        
+        // Check status after 5 seconds
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            updateModelStatus();
+            processButton.setEnabled(true);
+        }, 10000);
     }
     
     @Override

@@ -72,9 +72,9 @@ lint/tmp/
 # Kotlin
 .kotlin/
 
-# Model files (add your model files here)
+# Model files (downloaded automatically)
+# Note: Model is downloaded at runtime, not bundled
 *.gguf
-!app/src/main/assets/*.gguf
 
 # NDK
 obj/

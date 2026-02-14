@@ -21,6 +21,7 @@ import java.util.List;
 public class LLMEngine {
     private static final String TAG = "LLMEngine";
     private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
+    private static final String MODEL_URL = "https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf";
     private static final int CONTEXT_SIZE = 1024;
     private static final float TEMPERATURE = 0.2f;
     private static final int MAX_TOKENS = 120;
@@ -67,16 +68,18 @@ public class LLMEngine {
      */
     public boolean initialize() {
         try {
-            // Check if model exists in assets
-            if (!isModelAvailable()) {
-                Log.w(TAG, "Model file not found: " + MODEL_FILE);
+            // Check if model already exists in files dir
+            File modelFile = new File(context.getFilesDir(), MODEL_FILE);
+            
+            if (!modelFile.exists()) {
+                Log.i(TAG, "Model not found, will be downloaded after app starts");
+                // Model will be downloaded by ModelDownloader service
                 return false;
             }
 
-            // Extract model to files dir
-            String modelPath = extractModelToFilesDir();
-            if (modelPath == null) {
-                Log.e(TAG, "Failed to extract model");
+            String modelPath = modelFile.getAbsolutePath();
+            if (!modelFile.exists() || modelFile.length() < 1000000) {
+                Log.w(TAG, "Model file invalid or incomplete");
                 return false;
             }
 
@@ -132,6 +135,21 @@ public class LLMEngine {
      */
     public boolean isReady() {
         return initialized && modelPtr != 0;
+    }
+
+    /**
+     * Check if model file exists and is valid
+     */
+    public boolean isModelDownloaded() {
+        File modelFile = new File(context.getFilesDir(), MODEL_FILE);
+        return modelFile.exists() && modelFile.length() > 1000000;
+    }
+
+    /**
+     * Get model download URL for user
+     */
+    public String getModelDownloadUrl() {
+        return MODEL_URL;
     }
 
     /**

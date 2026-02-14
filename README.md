@@ -5,10 +5,19 @@ Fully offline AI assistant for Android automation using local LLM and Accessibil
 ## Features
 
 - **Offline AI**: Uses Google Gemma 2B model (4-bit quantized GGUF)
+- **Dynamic Download**: Model downloads after installation (small APK)
 - **Accessibility Automation**: Read UI elements and perform actions
 - **Floating Interface**: Minimal floating button for activation
 - **Lightweight**: Optimized for 4GB RAM devices
 - **Performance**: No continuous background inference
+
+## Quick Start
+
+1. **Build APK**: `./gradlew assembleDebug`
+2. **Install**: `adb install app-debug.apk`
+3. **Open App**: Grant permissions
+4. **Download Model**: Tap "Download Model" button
+5. **Ready**: Start using AI automation!
 
 ## Architecture
 
