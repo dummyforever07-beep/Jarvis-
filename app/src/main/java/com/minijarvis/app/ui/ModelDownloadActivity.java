@@ -42,7 +42,7 @@ public class ModelDownloadActivity extends AppCompatActivity {
     private static final String TAG = "ModelDownloadActivity";
     
     // Model configuration
-    private static final String MODEL_FILE = "gemma-2b-q4.gguf";
+    private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
     private static final String MODEL_URL = "https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf";
     private static final long MIN_FREE_STORAGE = 3L * 1024 * 1024 * 1024; // 3GB
     private static final long MIN_AVAILABLE_RAM = 3L * 1024 * 1024 * 1024; // 3GB
@@ -72,6 +72,7 @@ public class ModelDownloadActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private boolean isDownloading = false;
     private boolean isPaused = false;
+    private boolean isReceiverRegistered = false;
     
     // Progress tracking
     private long totalBytes = 0;
@@ -108,8 +109,9 @@ public class ModelDownloadActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (downloadReceiver != null) {
+        if (isReceiverRegistered && downloadReceiver != null) {
             unregisterReceiver(downloadReceiver);
+            isReceiverRegistered = false;
         }
     }
     
@@ -450,6 +452,7 @@ public class ModelDownloadActivity extends AppCompatActivity {
         };
         
         registerReceiver(downloadReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        isReceiverRegistered = true;
     }
     
     private String formatBytes(long bytes) {
@@ -473,7 +476,7 @@ public class ModelDownloadActivity extends AppCompatActivity {
         progressBar.setProgress(0);
         progressPercentText.setText("0%");
         progressSizeText.setText("0 MB / 2000 MB");
-        etaText.setText(R.string.download_eta);
+        etaText.setText(getString(R.string.download_eta, "--"));
         statusText.setText(getString(R.string.download_initializing));
     }
     

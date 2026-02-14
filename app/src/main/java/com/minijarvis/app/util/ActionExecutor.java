@@ -62,6 +62,12 @@ public class ActionExecutor {
     private boolean executeClick(ActionModel action, UIStructure currentUI) {
         String target = action.target;
         
+        // Validate currentUI is not null
+        if (currentUI == null) {
+            Log.w(TAG, "Current UI structure is null");
+            return false;
+        }
+        
         // Validate target exists
         if (!isValidTarget(target, currentUI.clickable, currentUI.textFields)) {
             Log.w(TAG, "Invalid click target: " + target);
@@ -81,6 +87,12 @@ public class ActionExecutor {
     private boolean executeType(ActionModel action, UIStructure currentUI) {
         String target = action.target;
         String text = action.text;
+        
+        // Validate currentUI is not null
+        if (currentUI == null) {
+            Log.w(TAG, "Current UI structure is null");
+            return false;
+        }
         
         // Validate text is provided
         if (text == null || text.isEmpty()) {
@@ -106,6 +118,12 @@ public class ActionExecutor {
     
     private boolean executeScroll(ActionModel action, UIStructure currentUI) {
         String direction = action.target;
+        
+        // Validate currentUI is not null
+        if (currentUI == null) {
+            Log.w(TAG, "Current UI structure is null");
+            return false;
+        }
         
         // Validate direction
         if (direction == null || direction.isEmpty()) {
@@ -166,7 +184,7 @@ public class ActionExecutor {
         // Check clickable elements
         if (clickable != null) {
             for (String element : clickable) {
-                if (element.equals(target)) {
+                if (element != null && element.equals(target)) {
                     return true;
                 }
             }
@@ -189,7 +207,7 @@ public class ActionExecutor {
         // Check text fields array
         if (textFields != null) {
             for (String field : textFields) {
-                if (field.equals(target)) {
+                if (field != null && field.equals(target)) {
                     return true;
                 }
             }

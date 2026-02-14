@@ -97,10 +97,15 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         checkPermissions();
         
+        // Refresh accessibility service instance
+        accessibilityService = MiniJarvisAccessibilityService.getInstance();
+        
         // Check if model is now available after download
-        if (llmEngine != null && llmEngine.isModelDownloaded()) {
+        if (llmEngine != null) {
             updateModelStatus();
-            processButton.setEnabled(true);
+            if (llmEngine.isModelDownloaded()) {
+                processButton.setEnabled(true);
+            }
         }
     }
     
@@ -121,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements
         boolean llmInitialized = mockLlmEngine.initialize();
         Log.i(TAG, "Mock LLM initialized: " + llmInitialized);
         
+        // Get accessibility service instance
+        accessibilityService = MiniJarvisAccessibilityService.getInstance();
         actionExecutor = new ActionExecutor(accessibilityService);
     }
     
@@ -263,6 +270,10 @@ public class MainActivity extends AppCompatActivity implements
         mainHandler.post(() -> {
             try {
                 updateStatus("Processing...");
+                
+                // Get accessibility service instance (may have changed)
+                accessibilityService = MiniJarvisAccessibilityService.getInstance();
+                actionExecutor = new ActionExecutor(accessibilityService);
                 
                 // Get current UI structure
                 if (accessibilityService == null) {
