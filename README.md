@@ -1,232 +1,205 @@
-# MiniJarvis Android App
+<div align="center">
 
-Fully offline AI assistant for Android automation using local LLM and Accessibility Service.
+# 🧠 MiniJarvis
 
-## Features
+### Offline Android AI Automation Engine
 
-- **Offline AI**: Uses Google Gemma 2B model (4-bit quantized GGUF)
-- **Dynamic Download**: Model downloads after installation (small APK)
-- **Accessibility Automation**: Read UI elements and perform actions
-- **Floating Interface**: Minimal floating button for activation
-- **Lightweight**: Optimized for 4GB RAM devices
-- **Performance**: No continuous background inference
+![Android](https://img.shields.io/badge/Platform-Android-green)
+![Offline](https://img.shields.io/badge/AI-Fully%20Offline-blue)
+![LLM](https://img.shields.io/badge/Model-Gemma%202B-orange)
+![Privacy](https://img.shields.io/badge/Privacy-100%25%20Local-success)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-## Quick Start
+> A fully local AI assistant for Android automation powered by on-device LLM inference.
 
-1. **Build APK**: `./gradlew assembleDebug`
-2. **Install**: `adb install app-debug.apk`
-3. **Open App**: Grant permissions
-4. **Download Model**: Tap "Download Model" button
-5. **Ready**: Start using AI automation!
+</div>
 
-## Architecture
+---
 
-### 1. UI Extraction Layer
+## ✨ What Is MiniJarvis?
+
+MiniJarvis is an experimental on-device automation engine that:
+
+- Extracts live Android UI via Accessibility API  
+- Feeds structured UI to a local LLM  
+- Receives strict JSON actions  
+- Executes them deterministically  
+
+No cloud.  
+No tracking.  
+No background spying.
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+flowchart LR
+    A[User Trigger] --> B[Floating Button]
+    B --> C[Accessibility Service]
+    C --> D[Structured UI JSON]
+    D --> E[LLM Engine]
+    E --> F[Strict JSON Action]
+    F --> G[Action Executor]
+    G --> C
+```
+
+---
+
+## 🔬 Execution Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Floating Button
+    participant A as Accessibility Service
+    participant L as LLM Engine
+    participant X as Action Executor
+
+    U->>F: Tap
+    F->>A: Extract UI Tree
+    A-->>L: JSON UI Context
+    L-->>X: JSON Action
+    X->>A: Perform Action
+```
+
+---
+
+## 🧩 Core Components
+
+### 1️⃣ UI Extraction Layer
 - Uses Android Accessibility API
-- Extracts visible clickable elements, text fields, focused elements
-- Converts to structured JSON
+- Parses visible elements
+- Generates structured UI JSON
+- Context-aware extraction
 
-### 2. LLM Prompt Engine
-- System prompt optimized for Android automation
-- Strict JSON output format
-- Temperature 0.2, 120 max tokens, 1024 context
+---
 
-### 3. Action Execution Layer
-- Validates actions against current UI
-- Executes using Accessibility Service
-- 500ms delays between actions
-- Throttle prevention
+### 2️⃣ LLM Prompt Engine
+- Model: Gemma 2B (4-bit GGUF)
+- Context: 1024 tokens
+- Temperature: 0.2 (deterministic output)
+- Max Tokens: 120
+- Strict JSON-only responses
 
-### 4. Trigger System
-- Floating button activation
-- No continuous inference loop
+---
 
-## Setup Instructions
+### 3️⃣ Action Executor
+- Validates actions before execution
+- 500ms throttling
+- Emergency stop mechanism
+- Anti-loop safeguards
 
-### Prerequisites
-- Android Studio Arctic Fox or newer
-- Android SDK 24+ (minimum), 34 (target)
-- Java 8+
-- NDK and CMake (for native code)
+---
 
-### 1. Download Gemma 2B Model
+### 4️⃣ Trigger System
+- Floating overlay button
+- On-demand inference only
+- No continuous background processing
+
+---
+
+## ⚙ Installation
+
+### Build
 ```bash
-# Download Google Gemma 2B quantized model
-wget https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf
-
-# Copy to app/src/main/assets/
-cp gemma-2b-v1-q4_0.gguf app/src/main/assets/
-```
-
-### 2. Build Native Libraries
-```bash
-# Install NDK (if not using Android Studio)
-# Build llama.cpp for Android
-
-# Place compiled libraries in app/src/main/jniLibs/
-# arm64-v8a/libllama.so
-# armeabi-v7a/libllama.so
-```
-
-### 3. Build with Gradle
-```bash
-# Make gradlew executable
-chmod +x gradlew
-
-# Debug build
 ./gradlew assembleDebug
-
-# Release build
-./gradlew assembleRelease
 ```
 
-### 4. Install on Device
+### Install
 ```bash
-# Install via ADB
 adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-## Permissions Required
+---
 
-1. **Accessibility Service** (mandatory)
-   - Grant in Settings > Accessibility
-   - Allows reading UI elements and performing actions
+## 📥 Model Setup
 
-2. **Overlay Permission** (for floating button)
-   - Grant in Settings > Apps > MiniJarvis > Draw over other apps
-
-3. **Foreground Service** (for background operation)
-   - Automatically requested by the app
-
-4. **Battery Optimization** (optional)
-   - Disable for reliable background operation
-
-## Usage
-
-1. **Grant Permissions**
-   - Open app and follow permission prompts
-   - Enable accessibility service
-   - Enable overlay permission
-
-2. **Start Service**
-   - Tap "Start Service" button
-   - Floating button appears in top-right corner
-
-3. **Issue Commands**
-   - Tap floating button to activate
-   - Speak or type command (e.g., "click Search", "type Hello")
-   - Emergency stop button available
-
-4. **Debug Mode**
-   - Main activity shows UI JSON and model output
-   - Monitor actions and troubleshooting
-
-## Commands
-
-### Click Actions
-- "click [element]"
-- "tap [element]"
-- "press [element]"
-
-### Text Input
-- "type [text]"
-- "send [message]"
-- "write [text] in [field]"
-
-### Navigation
-- "scroll down"
-- "scroll up"
-- "go back"
-- "open [app_name]"
-
-## Configuration
-
-### Model Settings (in LLMEngine.java)
-```java
-private static final String MODEL_FILE = "gemma-2b-q4_0.gguf";
-private static final int CONTEXT_SIZE = 1024;
-private static final float TEMPERATURE = 0.2f;
-private static final int MAX_TOKENS = 120;
+```bash
+wget https://huggingface.co/leliuga/ggml-gemma-2b-v1-q4_0/resolve/main/gemma-2b-v1-q4_0.gguf
+cp gemma-2b-v1-q4_0.gguf app/src/main/assets/
 ```
 
-### Performance Tuning
-- Adjust context size for memory/performance tradeoff
-- Modify temperature for response creativity
-- Configure action delays in ActionExecutor
+---
 
-## Development Notes
+## 🛠 Native Integration (llama.cpp)
 
-### Mock Mode
-The app includes `MockLLMEngine` for testing without the actual model:
-- Provides rule-based responses
-- Simulates LLM behavior
-- Useful for development and debugging
+```
+app/src/main/jniLibs/
+    ├── arm64-v8a/libllama.so
+    └── armeabi-v7a/libllama.so
+```
 
-### Native Integration
-For production, replace `MockLLMEngine` with `LLMEngine`:
-1. Build llama.cpp with Android NDK
-2. Include .so files in jniLibs
-3. Enable `LLMEngine` initialization
+Built using Android NDK.
 
-### Troubleshooting
+---
 
-**Model not loading:**
-- Check model file exists in assets/
-- Verify file format (GGUF)
-- Check device storage space
+## 🔐 Required Permissions
 
-**Accessibility not working:**
-- Verify permission granted
-- Check service enabled in accessibility settings
-- Try restarting accessibility service
+| Permission | Purpose |
+|------------|----------|
+| Accessibility | Read & interact with UI |
+| Overlay | Floating activation button |
+| Foreground Service | Reliable background execution |
+| Battery Optimization Disabled | Stability |
 
-**Floating button not appearing:**
-- Grant overlay permission
-- Check overlay settings in Android settings
-- Restart the service
+---
 
-## File Structure
+## 📂 Project Structure
 
 ```
 app/
-├── src/main/
-│   ├── java/com/minijarvis/app/
-│   │   ├── MiniJarvisApplication.java
-│   │   ├── ui/MainActivity.java
-│   │   ├── service/FloatingButtonService.java
-│   │   ├── accessibility/MiniJarvisAccessibilityService.java
-│   │   ├── llm/LLMEngine.java
-│   │   ├── llm/MockLLMEngine.java
-│   │   ├── util/ActionExecutor.java
-│   │   └── model/ (ActionModel, UIStructure)
-│   ├── res/ (layouts, drawables, strings)
-│   ├── assets/ (model files)
-│   └── jni/ (native code)
-└── build.gradle
+├── ui/
+├── service/
+├── accessibility/
+├── llm/
+├── util/
+├── model/
+├── assets/
+└── jni/
 ```
 
-## Performance Considerations
+---
 
-- **Memory**: Model loaded once, reused
-- **CPU**: Inference only on user request
-- **Battery**: Foreground service, no continuous processing
-- **Storage**: Minimal app size, model file separate
-- **Network**: Fully offline, no cloud dependencies
+## ⚡ Performance Philosophy
 
-## Security & Privacy
+- Model loaded once, reused
+- Inference only on user trigger
+- Zero network dependency
+- Optimized for 4GB RAM devices
+- Minimal APK footprint
 
-- **Local Processing**: All inference on-device
-- **No Data Collection**: No cloud uploads
-- **Minimal Permissions**: Only required permissions
-- **Secure**: No network communications
+---
 
-## Contributing
+## 🔒 Privacy & Security
 
-1. Fork the repository
-2. Create feature branch
-3. Test on target devices
-4. Submit pull request
+- 100% local inference
+- No telemetry
+- No analytics
+- No data collection
+- No internet calls
 
-## License
+---
 
-See LICENSE file for details.
+## 📈 Roadmap
+
+- [ ] Multi-step reasoning memory
+- [ ] Better UI disambiguation
+- [ ] Smaller quantized models
+- [ ] Voice trigger
+- [ ] Action confidence scoring
+
+---
+
+## 🤝 Contributing
+
+1. Fork repository  
+2. Create feature branch  
+3. Test on real device  
+4. Submit PR  
+
+---
+
+## 📄 License
+
+MIT License
